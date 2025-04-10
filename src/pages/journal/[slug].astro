@@ -1,0 +1,30 @@
+---
+import { getEntry, getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+    const posts = await getCollection('journal');
+    return posts.map((post) => ({
+        params: { slug: post.id }, // use `id`, not `slug` from data
+    }));
+}
+
+const { slug } = Astro.params;
+const post = await getEntry({ collection: 'journal', slug });
+if (!post) throw new Error(`No post found for slug: ${slug}`);
+
+const { Content } = await render(post);
+---
+
+<article>
+    <h1>{post.data.title}</h1>
+    <p><em>
+        {new Date(post.data.date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+            timeZone: 'UTC' // ✅ this avoids local timezone drift
+  })}
+    </em></p>
+    <Content />
+</article>

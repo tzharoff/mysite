@@ -5,10 +5,13 @@ import Footer from '../../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import FormattedDate from "../../components/FormattedDate.astro";
 import {getCollection} from "astro:content";
-
+/*
 const posts = (await getCollection('journal')).sort(
     (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+*/
+const posts = await getCollection("journal");
+console.log("Journal slugs:", posts.map(p => p.slug));
 ---
 <html lang="en">
 <head>
@@ -89,18 +92,13 @@ const posts = (await getCollection('journal')).sort(
   <section>
     <ul>
       {
-        posts.map((post) => (
+        posts.map((post) => (    
             <li>
-              <a href={`/blog/${post.id}/`}>
-                <img width={720} height={360} src={post.data.heroImage} alt="" />
-                <h4 class="title">{post.data.title}</h4>
-                <p class="date">
-                  <FormattedDate date={post.data.pubDate} />
-                </p>
-              </a>
+              <a href={`/journal/${post.id}/`}>{post.data.title}</a>
             </li>
         ))
       }
+      <pre>{JSON.stringify(posts, null, 2)}</pre>
     </ul>
   </section>
 </main>
